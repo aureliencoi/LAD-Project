@@ -1,0 +1,31 @@
+<div class="settings-container">
+  <h2>Paramètres de Radarr</h2>
+  <form #radarrForm="ngForm" (ngSubmit)="saveRadarrSettings()">
+    <div class="form-group">
+      <label for="radarr-url">URL de Radarr</label>
+      <input type="text" id="radarr-url" name="radarrUrl" [(ngModel)]="radarrUrl" placeholder="http://192.168.1.100:7878" required>
+    </div>
+    <div class="form-group">
+      <label for="radarr-apikey">Clé API de Radarr</label>
+      <input type="password" id="radarr-apikey" name="radarrApiKey" [(ngModel)]="radarrApiKey" required>
+    </div>
+    <button type="submit" [disabled]="!radarrForm.valid">Sauvegarder Radarr</button>
+  </form>
+
+  <hr>
+
+  <h2>Paramètres de Sonarr</h2>
+  <form #sonarrForm="ngForm" (ngSubmit)="saveSonarrSettings()">
+    <div class="form-group">
+      <label for="sonarr-url">URL de Sonarr</label>
+      <input type="text" id="sonarr-url" name="sonarrUrl" [(ngModel)]="sonarrUrl" placeholder="http://192.168.1.100:8989" required>
+    </div>
+    <div class="form-group">
+      <label for="sonarr-apikey">Clé API de Sonarr</label>
+      <input type="password" id="sonarr-apikey" name="sonarrApiKey" [(ngModel)]="sonarrApiKey" required>
+    </div>
+    <button type="submit" [disabled]="!sonarrForm.valid">Sauvegarder Sonarr</button>
+  </form>
+
+  <p *ngIf="successMessage" class="success-message">{{ successMessage }}</p>
+</div>

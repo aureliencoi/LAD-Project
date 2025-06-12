@@ -1,0 +1,25 @@
+<div class="home-container">
+  <h1>Mes Films</h1>
+  <div class="media-grid" *ngIf="movies.length > 0; else noMovies">
+    <a *ngFor="let movie of movies" class="media-card" [routerLink]="['/movie', movie.id]">
+      <img [src]="movie.poster_url" [alt]="movie.title">
+      <div class="media-title">{{ movie.title }} ({{ movie.year }})</div>
+    </a>
+  </div>
+  <ng-template #noMovies>
+    <p>Aucun film à afficher. Vérifiez vos paramètres Radarr.</p>
+  </ng-template>
+
+  <hr>
+
+  <h1>Mes Séries</h1>
+  <div class="media-grid" *ngIf="series.length > 0; else noSeries">
+    <a *ngFor="let show of series" class="media-card" [routerLink]="['/series', show.id]">
+      <img [src]="show.poster_url" [alt]="show.title">
+      <div class="media-title">{{ show.title }} ({{ show.year }})</div>
+    </a>
+  </div>
+  <ng-template #noSeries>
+    <p>Aucune série à afficher. Vérifiez vos paramètres Sonarr.</p>
+  </ng-template>
+</div>

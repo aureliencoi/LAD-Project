@@ -1,0 +1,29 @@
+<div class="detail-container">
+  <div *ngIf="isLoading">
+    <p>Chargement en cours...</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <div *ngIf="media && !isLoading">
+    <h1>{{ media.title }} ({{ media.year }})</h1>
+    <p class="tagline"><em>{{ media.tagline }}</em></p>
+    
+    <div class="content">
+      <div class="poster">
+        <img *ngIf="media.images" [src]="media.images[0]?.remoteUrl" [alt]="media.title">
+      </div>
+      <div class="overview">
+        <h2>Synopsis</h2>
+        <p>{{ media.overview }}</p>
+      </div>
+    </div>
+    
+    <div class="assets-section">
+      <h2>Assets</h2>
+      <p>(Ici s'afficheront les posters, logos, etc.)</p>
+    </div>
+  </div>
+</div>

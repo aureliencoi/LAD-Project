@@ -25,3 +25,7 @@ class Token(BaseModel):
 # Schéma pour les données contenues dans le jeton
 class TokenData(BaseModel):
     username: str | None = None
+
+class RadarrSettings(BaseModel):
+    url: str
+    api_key: str
