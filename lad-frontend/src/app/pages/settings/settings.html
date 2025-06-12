@@ -1,5 +1,21 @@
 <div class="settings-container">
-  <h2>Paramètres de Radarr</h2>
+  <h2>Paramètres des Services</h2>
+
+  <hr>
+
+  <h3>The Movie Database (TMDB)</h3>
+  <p>Requis pour récupérer les assets (posters, logos...)</p>
+  <form #tmdbForm="ngForm" (ngSubmit)="saveTmdbSettings()">
+    <div class="form-group">
+      <label for="tmdb-apikey">Clé API TMDB</label>
+      <input type="password" id="tmdb-apikey" name="tmdbApiKey" [(ngModel)]="tmdbApiKey" required>
+    </div>
+    <button type="submit" [disabled]="!tmdbForm.valid">Sauvegarder TMDB</button>
+  </form>
+
+  <hr>
+  
+  <h3>Radarr</h3>
   <form #radarrForm="ngForm" (ngSubmit)="saveRadarrSettings()">
     <div class="form-group">
       <label for="radarr-url">URL de Radarr</label>
@@ -14,7 +30,7 @@
 
   <hr>
 
-  <h2>Paramètres de Sonarr</h2>
+  <h3>Sonarr</h3>
   <form #sonarrForm="ngForm" (ngSubmit)="saveSonarrSettings()">
     <div class="form-group">
       <label for="sonarr-url">URL de Sonarr</label>

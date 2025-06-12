@@ -1,0 +1,39 @@
+.detail-grid {
+  display: grid;
+  // Crée deux colonnes : la première prend 1/3 de l'espace, la seconde le reste
+  grid-template-columns: 1fr 2fr; 
+  gap: 20px; // Espace entre les colonnes
+  padding: 20px;
+}
+
+.info-panel {
+  // Pas de style particulier nécessaire pour l'instant
+}
+
+.editor-panel {
+  // Style pour le conteneur du canvas
+  canvas {
+    // Le canvas prendra toute la largeur de sa colonne
+    width: 100%;
+    // On ajoute une bordure pour bien le voir
+    border: 2px dashed #555;
+  }
+}
+
+.asset-thumbnail-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.asset-thumbnail {
+  width: 100px; // Taille des petites images
+  cursor: pointer;
+  border-radius: 4px;
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  }
+}

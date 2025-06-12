@@ -9,17 +9,28 @@
 
   <div *ngIf="media && !isLoading" class="detail-grid">
     <div class="info-panel">
-      <h1>{{ media.title }} ({{ media.year }})</h1>
-      <p><em>{{ media.tagline }}</em></p>
+      <h1>{{ media.tmdb_details?.title || media.title }} ({{ media.year }})</h1>
+      <p><em>{{ media.tmdb_details?.tagline }}</em></p>
       <h2>Synopsis</h2>
-      <p>{{ media.overview }}</p>
+      <p>{{ media.tmdb_details?.overview || media.overview }}</p>
 
       <hr>
 
       <h2>Assets Disponibles (TMDB)</h2>
+
+      <!-- --- NOUVEAU : Boutons de filtre --- -->
+      <div class="filter-buttons">
+        <button (click)="setLanguageFilter('all')" [class.active]="selectedLanguage === 'all'">Tous</button>
+        <button (click)="setLanguageFilter('null')" [class.active]="selectedLanguage === 'null'">Sans Texte</button>
+        <button (click)="setLanguageFilter('fr')" [class.active]="selectedLanguage === 'fr'">Français</button>
+        <button (click)="setLanguageFilter('en')" [class.active]="selectedLanguage === 'en'">Anglais</button>
+        <!-- On pourra ajouter d'autres langues ici -->
+      </div>
+
       <h3>Posters</h3>
       <div class="asset-thumbnail-list">
-        <img *ngFor="let poster of media.tmdb_posters" 
+        <!-- On applique le pipe ici avec le symbole '|' -->
+        <img *ngFor="let poster of media.tmdb_images?.posters | languageFilter:selectedLanguage" 
              [src]="'https://image.tmdb.org/t/p/w200' + poster.file_path" 
              (click)="setBackgroundImage('https://image.tmdb.org/t/p/original' + poster.file_path)"
              class="asset-thumbnail">
@@ -27,7 +38,8 @@
       
       <h3>Fonds d'écran</h3>
       <div class="asset-thumbnail-list">
-        <img *ngFor="let backdrop of media.tmdb_backdrops" 
+        <!-- On applique aussi le pipe ici -->
+        <img *ngFor="let backdrop of media.tmdb_images?.backdrops | languageFilter:selectedLanguage" 
              [src]="'https://image.tmdb.org/t/p/w200' + backdrop.file_path"
              (click)="setBackgroundImage('https://image.tmdb.org/t/p/original' + backdrop.file_path)"
              class="asset-thumbnail">
@@ -36,8 +48,14 @@
       <hr>
       
       <h2>Actions</h2>
+      <p>Charger une image de fond :</p>
       <input type="file" (change)="handleFileUpload($event)" accept="image/*">
 
+      <hr>
+      <h2>Ajouter un badge</h2>
+      <div class="asset-thumbnail-list">
+        <img src="assets/badges/4k.png" (click)="addBadgeToCanvas('assets/badges/4k.png')" class="asset-thumbnail" title="Ajouter le badge 4K">
+      </div>
     </div>
 
     <div class="editor-panel">
