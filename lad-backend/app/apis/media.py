@@ -6,9 +6,17 @@ from sqlalchemy.orm import Session
 from cryptography.fernet import Fernet
 from pyarr import RadarrAPI, SonarrAPI
 
+# --- NOUVEAUX IMPORTS ---
+from tmdbv3api import TMDb, Movie as TMDbMovie
+
 from .. import crud, models
-from ..config import ENCRYPTION_KEY
+from ..config import ENCRYPTION_KEY, TMDB_API_KEY # <-- Importer la clé TMDB
 from .auth import get_current_user, get_db
+
+# --- CONFIGURATION TMDB ---
+tmdb = TMDb()
+tmdb.api_key = TMDB_API_KEY
+tmdb.language = 'fr-FR'
 
 router = APIRouter()
 
@@ -30,25 +38,30 @@ def _get_decrypted_settings(db: Session, user_id: int, service_name: str):
 
 # --- ROUTES EXISTANTES (MODIFIÉES POUR UTILISER LA FONCTION HELPER) ---
 
-@router.get("/movies")
-def get_movies(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+@router.get("/movie/{movie_id}")
+def get_movie_detail(movie_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     try:
         settings = _get_decrypted_settings(db, current_user.id, "radarr")
         radarr = RadarrAPI(settings['url'], settings['api_key'])
-        radarr_movies = radarr.get_movie()
+        movie_detail_radarr = radarr.get_movie(movie_id)
+        if not movie_detail_radarr:
+            raise HTTPException(status_code=404, detail="Film non trouvé dans Radarr.")
         
-        formatted_movies = []
-        for movie in radarr_movies:
-            poster_url = ""
-            if movie.get('images'):
-                for image in movie['images']:
-                    if image.get('coverType') == "poster":
-                        poster_url = image.get('remoteUrl') or image.get('url')
-                        break
-            formatted_movies.append({ "id": movie.get('id'), "title": movie.get('title'), "year": movie.get('year'), "poster_url": poster_url })
-        return formatted_movies
+        # --- NOUVELLE LOGIQUE TMDB ---
+        # On récupère l'ID TMDB depuis les données de Radarr
+        tmdb_id = movie_detail_radarr.get('tmdbId')
+        if tmdb_id:
+            tmdb_movie_api = TMDbMovie()
+            # On récupère les images pour ce film
+            images = tmdb_movie_api.images(tmdb_id)
+            # On ajoute les images à notre objet de réponse
+            # On peut ajouter d'autres infos si on veut (acteurs, etc.)
+            movie_detail_radarr['tmdb_posters'] = images.get('posters', [])
+            movie_detail_radarr['tmdb_backdrops'] = images.get('backdrops', [])
+        
+        return movie_detail_radarr
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur de communication avec Radarr: {e}")
+        raise HTTPException(status_code=500, detail=f"Erreur de communication avec les services externes: {e}")
 
 @router.get("/series")
 def get_series(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):

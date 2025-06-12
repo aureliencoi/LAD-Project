@@ -7,23 +7,41 @@
     <p>{{ errorMessage }}</p>
   </div>
 
-  <div *ngIf="media && !isLoading">
-    <h1>{{ media.title }} ({{ media.year }})</h1>
-    <p class="tagline"><em>{{ media.tagline }}</em></p>
-    
-    <div class="content">
-      <div class="poster">
-        <img *ngIf="media.images" [src]="media.images[0]?.remoteUrl" [alt]="media.title">
+  <div *ngIf="media && !isLoading" class="detail-grid">
+    <div class="info-panel">
+      <h1>{{ media.title }} ({{ media.year }})</h1>
+      <p><em>{{ media.tagline }}</em></p>
+      <h2>Synopsis</h2>
+      <p>{{ media.overview }}</p>
+
+      <hr>
+
+      <h2>Assets Disponibles (TMDB)</h2>
+      <h3>Posters</h3>
+      <div class="asset-thumbnail-list">
+        <img *ngFor="let poster of media.tmdb_posters" 
+             [src]="'https://image.tmdb.org/t/p/w200' + poster.file_path" 
+             (click)="setBackgroundImage('https://image.tmdb.org/t/p/original' + poster.file_path)"
+             class="asset-thumbnail">
       </div>
-      <div class="overview">
-        <h2>Synopsis</h2>
-        <p>{{ media.overview }}</p>
+      
+      <h3>Fonds d'écran</h3>
+      <div class="asset-thumbnail-list">
+        <img *ngFor="let backdrop of media.tmdb_backdrops" 
+             [src]="'https://image.tmdb.org/t/p/w200' + backdrop.file_path"
+             (click)="setBackgroundImage('https://image.tmdb.org/t/p/original' + backdrop.file_path)"
+             class="asset-thumbnail">
       </div>
+
+      <hr>
+      
+      <h2>Actions</h2>
+      <input type="file" (change)="handleFileUpload($event)" accept="image/*">
+
     </div>
-    
-    <div class="assets-section">
-      <h2>Assets</h2>
-      <p>(Ici s'afficheront les posters, logos, etc.)</p>
+
+    <div class="editor-panel">
+      <canvas id="assetCanvas" width="1000" height="1500"></canvas>
     </div>
   </div>
 </div>
