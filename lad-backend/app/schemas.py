@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional # Assurez-vous d'avoir cet import
+from typing import Optional
 
-# --- SCHÉMAS UTILISATEUR ET TOKEN (Existants) ---
+# --- Schémas existants (User, Token, SettingData) ---
 class UserBase(BaseModel):
     id: int
     username: str
@@ -22,9 +22,23 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: Optional[str] = None
 
-# --- NOUVEAU SCHÉMA GÉNÉRIQUE POUR LES PARAMÈTRES ---
 class SettingData(BaseModel):
-    # On rend l'URL optionnelle car TMDB n'en a pas besoin
     url: Optional[str] = None
-    # La clé API est toujours requise
     api_key: str
+
+# --- NOUVEAUX SCHÉMAS POUR LES TEMPLATES ---
+
+# Schéma pour les données reçues lors de la création d'un template
+class TemplateCreate(BaseModel):
+    name: str
+    template_data: str # Le JSON du canvas sera envoyé comme une chaîne de caractères
+
+# Schéma pour les données renvoyées par l'API (lecture d'un template)
+class Template(BaseModel):
+    id: int
+    name: str
+    template_data: str
+    owner_id: int
+
+    class Config:
+        from_attributes = True
