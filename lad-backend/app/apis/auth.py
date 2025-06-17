@@ -58,18 +58,26 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     """
     Fournit un jeton d'accès après vérification de l'utilisateur.
     """
+    print("\n--- [LOGIN DEBUG] Tentative de connexion pour l'utilisateur:", form_data.username)
     user = crud.get_user_by_username(db, username=form_data.username)
-    if not user or not security.verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Nom d'utilisateur ou mot de passe incorrect",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+    
+    if not user:
+        print("--- [LOGIN DEBUG] ERREUR: Utilisateur non trouvé dans la BDD.")
+        raise HTTPException(status_code=401, detail="Nom d'utilisateur ou mot de passe incorrect")
+
+    print("--- [LOGIN DEBUG] Utilisateur trouvé. Vérification du mot de passe...")
+    is_password_correct = security.verify_password(form_data.password, user.hashed_password)
+    print(f"--- [LOGIN DEBUG] Le mot de passe est-il correct ? -> {is_password_correct}")
+
+    if not is_password_correct:
+        print("--- [LOGIN DEBUG] ERREUR: Le mot de passe est incorrect.")
+        raise HTTPException(status_code=401, detail="Nom d'utilisateur ou mot de passe incorrect")
     
     access_token_expires = timedelta(minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = security.create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
+    print("--- [LOGIN DEBUG] Mot de passe correct. Jeton créé.")
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/users/me", response_model=schemas.UserBase)
